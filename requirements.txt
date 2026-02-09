@@ -1,0 +1,5 @@
+lxml
+pyyaml
+requests
+tqdm
+urllib3

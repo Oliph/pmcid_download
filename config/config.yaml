@@ -1,0 +1,73 @@
+# Main Repository Configuration
+# This file contains configuration for article downloading, processing, and database management
+# For LLM-specific extraction configuration, see: config/llm/
+
+api_europepmc_params:
+  rest_articles:
+    root_url: https://www.ebi.ac.uk/europepmc/webservices/rest/
+  oai_service:
+    root_url: http://europepmc.org/oai.cgi
+  annotations_api:
+    root_url: http://www.ebi.ac.uk/europepmc/annotations_api/annotationsByArticleIds
+  # Should only contains the Open access articles but didn't check it
+  archive_api:
+    root_url: https://europepmc.org/ftp/oa/pmcid.txt.gz
+  archive_file: ./data/pmcid.txt.gz
+  article_query_folder: ./data/query_articles/
+  article_human_folder: ./data/articles_human/
+  pmcid_species_file: ./data/pmcid_species.txt
+  # Used in previous script to be able to rerun the script without redl everything. Maybe still needed
+  # For the new downloading script
+  pmcid_human_file: ./data/pmcid_humans.txt
+  db_info_articles: ./data/db_info_articles.sqlite3
+  record_files: true
+  xml_origin: api # can be either 'api' if connect to the api or 'files' if use dl files
+
+search_params:
+  rerun_archive: false
+  query: eLIfe AND (HAS_FT:Y AND OPEN_ACCESS:Y )
+  # found using the script species_exploration.ipynb for manual exploration of the different terms
+  human_terms: [human, humans, man, homo sapiens, h. sapiens, homo_sapiens]
+
+processing_params:
+  sentence_location: ./data/candidate_sentences.csv
+  json_human_folder: ./data/json_humans/
+  token_sentences:
+    [man, woman, male, female, men, women, males, females, sample]
+  list_article_location: ./data/exploration/list_article.csv
+  list_level_location: ./data/exploration/list_levels.csv
+  list_tag_location: ./data/explorationlist_tags.csv
+  list_attr_val_location: ./data/exploration/list_attr_val.csv
+  list_sections_location: ./data/exploration/list_sections_details.csv
+  list_parent_location: ./data/exploration/list_parent_details.csv
+
+db_params:
+  table_status: status
+  table_sections: sections
+  table_metadata: article_metadata
+  table_inference: inference
+
+# Data Loading Configuration
+# Controls how articles are selected for processing
+data_loading:
+  # Options: "test_set" (use curated test dataset), "database" (all articles from DB)
+  source: "database"
+  test_set_path: ./data/test_set.csv
+  # Filter articles by type (optional, null = no filter)
+  # Common values: "research-article", "review-article", "case-report"
+  article_type_filter: "research-article"
+
+# LLM Extraction Results Configuration
+# Controls how and where extraction results are saved
+extraction_results:
+  # Options: "sqlite", "json", "both"
+  format: "json"
+  output_dir: ./data/results
+  base_filename: demographics_results.jsonl
+  overwrite_existing: false
+# LLM Extraction Configuration
+# For demographics extraction agent configuration, see: config/llm/
+# - common.yaml: LLM-specific settings (content limits, prompts)
+# - agent_default.yaml, agent_cot.yaml, etc.: Agent approach configs
+# - simple_default.yaml, simple_methods_*.yaml: Simple LLM approach configs
+# - models/: Model-specific configurations
